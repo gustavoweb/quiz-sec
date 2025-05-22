@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz de Cybersegurança - Formas de Ataque</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #535353, #313131);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+      }
+
+      .header p {
+        font-size: 1.1em;
+        opacity: 0.9;
+      }
+
+      .quiz-content {
+        padding: 30px;
+      }
+
+      .question {
+        margin-bottom: 30px;
+        padding: 25px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border-left: 5px solid #667eea;
+        display: none;
+      }
+
+      .question.active {
+        display: block;
+        animation: fadeIn 0.5s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .question h3 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 1.3em;
+      }
+
+      .options {
+        list-style: none;
+      }
+
+      .options li {
+        margin-bottom: 12px;
+        padding: 15px;
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .options li:hover {
+        border-color: #667eea;
+        background: #f0f4ff;
+      }
+
+      .options li.selected {
+        border-color: #667eea;
+        background: #667eea;
+        color: white;
+      }
+
+      .options li.correct {
+        border-color: #27ae60;
+        background: #27ae60;
+        color: white;
+      }
+
+      .options li.incorrect {
+        border-color: #e74c3c;
+        background: #e74c3c;
+        color: white;
+      }
+
+      .btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 15px 30px;
+        border-radius: 25px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 10px 0;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 10px;
+        background: #e9ecef;
+        border-radius: 5px;
+        margin-bottom: 30px;
+      }
+
+      .progress {
+        height: 100%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 5px;
+        transition: width 0.3s ease;
+      }
+
+      .score-display {
+        text-align: center;
+        font-size: 1.2em;
+        margin-bottom: 20px;
+      }
+
+      .results {
+        display: none;
+        text-align: center;
+        padding: 30px;
+      }
+
+      .results.show {
+        display: block;
+      }
+
+      .score-circle {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        margin: 20px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2em;
+        font-weight: bold;
+        color: white;
+      }
+
+      .excellent {
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
+      }
+      .good {
+        background: linear-gradient(135deg, #f39c12, #e67e22);
+      }
+      .needs-improvement {
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
+      }
+
+      .navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+      }
+
+      .question-counter {
+        font-weight: bold;
+        color: #667eea;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🛡️ Quiz de Cybersegurança</h1>
+        <p>Teste seus conhecimentos sobre formas de ataque</p>
+        <p>Prof. Gustavo</p>
+      </div>
+
+      <div class="quiz-content">
+        <div class="progress-bar">
+          <div class="progress" id="progressBar"></div>
+        </div>
+
+        <div class="score-display">
+          <span class="question-counter" id="questionCounter"
+            >Questão 1 de 15</span
+          >
+        </div>
+
+        <!-- Questão 1 - Phishing -->
+        <div class="question active" data-question="0">
+          <h3>1. Qual é o principal objetivo de um ataque de phishing?</h3>
+          <ul class="options">
+            <li data-answer="a">Danificar o computador da vítima</li>
+            <li data-answer="b">Obter informações pessoais ou credenciais</li>
+            <li data-answer="c">Instalar antivírus no sistema</li>
+            <li data-answer="d">Melhorar a segurança do email</li>
+          </ul>
+        </div>
+
+        <!-- Questão 2 - Email Suspeito -->
+        <div class="question" data-question="1">
+          <h3>2. Qual destes sinais NÃO indica um email de phishing?</h3>
+          <ul class="options">
+            <li data-answer="a">
+              Urgência excessiva ("Sua conta será bloqueada em 24h")
+            </li>
+            <li data-answer="b">Erros de português e gramática</li>
+            <li data-answer="c">Email personalizado com seu nome completo</li>
+            <li data-answer="d">Solicitação de dados pessoais por email</li>
+          </ul>
+        </div>
+
+        <!-- Questão 3 - Engenharia Social -->
+        <div class="question" data-question="2">
+          <h3>
+            3. Em um ataque de engenharia social por telefone, o atacante se faz
+            passar por:
+          </h3>
+          <ul class="options">
+            <li data-answer="a">Apenas funcionário de banco</li>
+            <li data-answer="b">Somente técnico de informática</li>
+            <li data-answer="c">
+              Qualquer pessoa de confiança (suporte, banco, governo)
+            </li>
+            <li data-answer="d">
+              Apenas representante de operadora de telefone
+            </li>
+          </ul>
+        </div>
+
+        <!-- Questão 4 - Senha Forte -->
+        <div class="question" data-question="3">
+          <h3>4. Qual dessas senhas é considerada mais segura?</h3>
+          <ul class="options">
+            <li data-answer="a">123456789</li>
+            <li data-answer="b">senha123</li>
+            <li data-answer="c">MinhaSenh@2024!</li>
+            <li data-answer="d">12345678</li>
+          </ul>
+        </div>
+
+        <!-- Questão 5 - Características Senha Forte -->
+        <div class="question" data-question="4">
+          <h3>5. Uma senha forte deve conter:</h3>
+          <ul class="options">
+            <li data-answer="a">Apenas números</li>
+            <li data-answer="b">Apenas letras maiúsculas</li>
+            <li data-answer="c">
+              Letras maiúsculas, minúsculas, números e símbolos
+            </li>
+            <li data-answer="d">Apenas palavras do dicionário</li>
+          </ul>
+        </div>
+
+        <!-- Questão 6 - URL Maliciosa -->
+        <div class="question" data-question="5">
+          <h3>6. Qual destas URLs é mais suspeita?</h3>
+          <ul class="options">
+            <li data-answer="a">https://www.banco.com.br</li>
+            <li data-answer="b">https://www.bancodobrasil.com.br</li>
+            <li data-answer="c">https://www.banc0-d0-brasil.com</li>
+            <li data-answer="d">https://bb.com.br</li>
+          </ul>
+        </div>
+
+        <!-- Questão 7 - Malware -->
+        <div class="question" data-question="6">
+          <h3>7. O que é malware?</h3>
+          <ul class="options">
+            <li data-answer="a">Um tipo de hardware defeituoso</li>
+            <li data-answer="b">Software malicioso criado para causar danos</li>
+            <li data-answer="c">Um programa antivírus</li>
+            <li data-answer="d">Uma forma de backup de dados</li>
+          </ul>
+        </div>
+
+        <!-- Questão 8 - Ransomware -->
+        <div class="question" data-question="7">
+          <h3>8. O ransomware é um tipo de ataque que:</h3>
+          <ul class="options">
+            <li data-answer="a">Criptografa arquivos e exige pagamento</li>
+            <li data-answer="b">Apenas monitora a atividade do usuário</li>
+            <li data-answer="c">Melhora a performance do computador</li>
+            <li data-answer="d">Instala atualizações automáticas</li>
+          </ul>
+        </div>
+
+        <!-- Questão 9 - Wi-Fi Público -->
+        <div class="question" data-question="8">
+          <h3>9. Qual o principal risco ao usar Wi-Fi público?</h3>
+          <ul class="options">
+            <li data-answer="a">Consumir mais bateria do dispositivo</li>
+            <li data-answer="b">Interceptação de dados pessoais</li>
+            <li data-answer="c">Conexão mais lenta</li>
+            <li data-answer="d">Nenhum risco existe</li>
+          </ul>
+        </div>
+
+        <!-- Questão 10 - Atualização -->
+        <div class="question" data-question="9">
+          <h3>10. Por que é importante manter softwares atualizados?</h3>
+          <ul class="options">
+            <li data-answer="a">Para corrigir vulnerabilidades de segurança</li>
+            <li data-answer="b">Apenas para ter novas funcionalidades</li>
+            <li data-answer="c">Para ocupar mais espaço no disco</li>
+            <li data-answer="d">Não é necessário atualizar</li>
+          </ul>
+        </div>
+
+        <!-- Questão 11 - Backup -->
+        <div class="question" data-question="10">
+          <h3>
+            11. Com que frequência deve-se fazer backup de dados importantes?
+          </h3>
+          <ul class="options">
+            <li data-answer="a">Uma vez por ano</li>
+            <li data-answer="b">Apenas quando lembrar</li>
+            <li data-answer="c">Regularmente (diário, semanal ou mensal)</li>
+            <li data-answer="d">Nunca é necessário</li>
+          </ul>
+        </div>
+
+        <!-- Questão 12 - Autenticação -->
+        <div class="question" data-question="11">
+          <h3>12. O que é autenticação de dois fatores (2FA)?</h3>
+          <ul class="options">
+            <li data-answer="a">Usar duas senhas diferentes</li>
+            <li data-answer="b">
+              Combinar senha com outro método de verificação
+            </li>
+            <li data-answer="c">Fazer login duas vezes</li>
+            <li data-answer="d">Ter duas contas no mesmo serviço</li>
+          </ul>
+        </div>
+
+        <!-- Questão 13 - Caso Real -->
+        <div class="question" data-question="12">
+          <h3>
+            13. Qual foi uma das principais causas do ataque à Equifax em 2017?
+          </h3>
+          <ul class="options">
+            <li data-answer="a">Senha fraca dos funcionários</li>
+            <li data-answer="b">
+              Falha em atualizar software com vulnerabilidade conhecida
+            </li>
+            <li data-answer="c">Falta de antivírus</li>
+            <li data-answer="d">Uso de Wi-Fi público</li>
+          </ul>
+        </div>
+
+        <!-- Questão 14 - Prevenção -->
+        <div class="question" data-question="13">
+          <h3>14. Qual NÃO é uma boa prática de segurança?</h3>
+          <ul class="options">
+            <li data-answer="a">Usar a mesma senha em vários sites</li>
+            <li data-answer="b">Manter software atualizado</li>
+            <li data-answer="c">Fazer backup regularmente</li>
+            <li data-answer="d">Usar autenticação de dois fatores</li>
+          </ul>
+        </div>
+
+        <!-- Questão 15 - Spear Phishing -->
+        <div class="question" data-question="14">
+          <h3>15. O que diferencia o spear phishing do phishing comum?</h3>
+          <ul class="options">
+            <li data-answer="a">Usa apenas SMS em vez de email</li>
+            <li data-answer="b">
+              É direcionado a pessoas específicas com informações personalizadas
+            </li>
+            <li data-answer="c">Só ataca empresas, nunca pessoas físicas</li>
+            <li data-answer="d">Não existe diferença</li>
+          </ul>
+        </div>
+
+        <div class="navigation">
+          <button
+            class="btn"
+            id="prevBtn"
+            onclick="changeQuestion(-1)"
+            style="display: none"
+          >
+            ⬅️ Anterior
+          </button>
+          <button class="btn" id="nextBtn" onclick="checkAnswer()">
+            Verificar Resposta
+          </button>
+        </div>
+      </div>
+
+      <div class="results" id="results">
+        <h2>🎉 Quiz Concluído!</h2>
+        <div class="score-circle" id="scoreCircle">
+          <span id="finalScore">0%</span>
+        </div>
+        <h3 id="resultMessage">Resultado</h3>
+        <p id="resultDescription">Descrição do resultado</p>
+        <button class="btn" onclick="restartQuiz()">🔄 Refazer Quiz</button>
+      </div>
+    </div>
+
+    <script>
+      const questions = document.querySelectorAll(".question");
+      const correctAnswers = [
+        "b",
+        "c",
+        "c",
+        "c",
+        "c",
+        "c",
+        "b",
+        "a",
+        "b",
+        "a",
+        "c",
+        "b",
+        "b",
+        "a",
+        "b",
+      ];
+      let currentQuestion = 0;
+      let score = 0;
+      let answered = false;
+
+      function updateProgressBar() {
+        const progress = ((currentQuestion + 1) / questions.length) * 100;
+        document.getElementById("progressBar").style.width = progress + "%";
+        document.getElementById("questionCounter").textContent = `Questão ${
+          currentQuestion + 1
+        } de ${questions.length}`;
+      }
+
+      function checkAnswer() {
+        if (answered) return;
+
+        const current = questions[currentQuestion];
+        const options = current.querySelectorAll(".options li");
+        const selected = current.querySelector(".options li.selected");
+
+        if (!selected) {
+          alert("Por favor, selecione uma resposta!");
+          return;
+        }
+
+        answered = true;
+        const correctAnswer = correctAnswers[currentQuestion];
+
+        options.forEach((option) => {
+          if (option.dataset.answer === correctAnswer) {
+            option.classList.add("correct");
+            if (option.classList.contains("selected")) {
+              score++;
+            }
+          } else if (option.classList.contains("selected")) {
+            option.classList.add("incorrect");
+          }
+        });
+
+        document.getElementById("nextBtn").textContent =
+          currentQuestion === questions.length - 1
+            ? "Ver Resultado"
+            : "Próxima ➡️";
+        setTimeout(() => {
+          if (currentQuestion === questions.length - 1) {
+            showResults();
+          } else {
+            changeQuestion(1);
+          }
+        }, 2000);
+      }
+
+      function changeQuestion(direction) {
+        if (direction === 1 && !answered) return;
+
+        questions[currentQuestion].classList.remove("active");
+        currentQuestion += direction;
+
+        if (currentQuestion >= 0 && currentQuestion < questions.length) {
+          questions[currentQuestion].classList.add("active");
+          answered = false;
+
+          document.getElementById("prevBtn").style.display =
+            currentQuestion > 0 ? "block" : "none";
+          document.getElementById("nextBtn").textContent = "Verificar Resposta";
+
+          updateProgressBar();
+        }
+      }
+
+      function showResults() {
+        const percentage = Math.round((score / questions.length) * 100);
+        const resultsDiv = document.getElementById("results");
+        const scoreCircle = document.getElementById("scoreCircle");
+        const finalScore = document.getElementById("finalScore");
+        const resultMessage = document.getElementById("resultMessage");
+        const resultDescription = document.getElementById("resultDescription");
+
+        document.querySelector(".quiz-content").style.display = "none";
+        resultsDiv.classList.add("show");
+
+        finalScore.textContent = percentage + "%";
+
+        if (percentage >= 80) {
+          scoreCircle.className = "score-circle excellent";
+          resultMessage.textContent = "Excelente! 🌟";
+          resultDescription.textContent =
+            "Você demonstra um ótimo conhecimento sobre cybersegurança. Continue assim!";
+        } else if (percentage >= 60) {
+          scoreCircle.className = "score-circle good";
+          resultMessage.textContent = "Bom trabalho! 👍";
+          resultDescription.textContent =
+            "Você tem um bom conhecimento básico, mas pode aprimorar alguns conceitos.";
+        } else {
+          scoreCircle.className = "score-circle needs-improvement";
+          resultMessage.textContent = "Precisa melhorar 📚";
+          resultDescription.textContent =
+            "Recomendo estudar mais sobre cybersegurança para se proteger melhor online.";
+        }
+      }
+
+      function restartQuiz() {
+        currentQuestion = 0;
+        score = 0;
+        answered = false;
+
+        questions.forEach((question, index) => {
+          question.classList.remove("active");
+          if (index === 0) question.classList.add("active");
+
+          const options = question.querySelectorAll(".options li");
+          options.forEach((option) => {
+            option.classList.remove("selected", "correct", "incorrect");
+          });
+        });
+
+        document.getElementById("results").classList.remove("show");
+        document.querySelector(".quiz-content").style.display = "block";
+        document.getElementById("nextBtn").textContent = "Verificar Resposta";
+        document.getElementById("prevBtn").style.display = "none";
+
+        updateProgressBar();
+      }
+
+      // Event listeners para seleção de respostas
+      document.addEventListener("click", function (e) {
+        if (e.target.matches(".options li") && !answered) {
+          const options = e.target.parentElement.querySelectorAll("li");
+          options.forEach((option) => option.classList.remove("selected"));
+          e.target.classList.add("selected");
+        }
+      });
+
+      // Inicializar
+      updateProgressBar();
+    </script>
+  </body>
+</html>
