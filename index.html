@@ -28,7 +28,7 @@
       }
 
       .header {
-        background: linear-gradient(135deg, #535353, #313131);
+        background: linear-gradient(135deg, #7b7b7b, #2e2e2e);
         color: white;
         padding: 30px;
         text-align: center;
@@ -482,17 +482,23 @@
 
         answered = true;
         const correctAnswer = correctAnswers[currentQuestion];
+        let isCorrect = false;
 
         options.forEach((option) => {
           if (option.dataset.answer === correctAnswer) {
             option.classList.add("correct");
             if (option.classList.contains("selected")) {
-              score++;
+              isCorrect = true;
             }
           } else if (option.classList.contains("selected")) {
             option.classList.add("incorrect");
           }
         });
+
+        // Incrementar score apenas uma vez por questão correta
+        if (isCorrect) {
+          score++;
+        }
 
         document.getElementById("nextBtn").textContent =
           currentQuestion === questions.length - 1
